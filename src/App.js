@@ -4,7 +4,7 @@ import './App.css';
 //TODO: ADD Algorithm
 //TODO: Drawing nodes
 //TODO: ADD Grid Size customisation
-//TODO: ADD onhover for drawing nodes
+
 
 //TODO: FIX draw speed bug where the speed change does not change actual speed
 
@@ -13,6 +13,7 @@ import './App.css';
 var loop; var updateInterval = setInterval(() =>  loop(), 1);let tempGrid; 
 let keypress = "" //Currently pressed Key
 
+let startEnd = 1 //Temporary
 
 function App() {
   //Loop Administration
@@ -82,6 +83,17 @@ function App() {
     }
   }
 
+  //Temporary function to draw start and end Nodes
+  function addStartEnd(rowId, tileId){
+    if(startEnd === 1){
+      tempGrid[rowId][tileId] = {...tempGrid[rowId][tileId], style: {backgroundColor: "#109f10", borderRadius: 50}}
+    }
+    if(startEnd===2){
+      tempGrid[rowId][tileId] = {...tempGrid[rowId][tileId], style: {backgroundColor: "#10109f"}}
+    }
+    startEnd++
+  }
+
   //Setup, only executes at Start
   useEffect(() => {
     generateGrid()
@@ -100,7 +112,7 @@ function App() {
         {grid.map((row,rowId) => 
           <div key={"row-"+rowId} style={{height: tileSize}}>
             {row.map((tile,tileId) => 
-              <button key={"row-"+rowId+"tile-"+tileId} style={{height: tileSize, width: tileSize, ...tile.style}} onMouseOver={() => drawNode(rowId, tileId)}></button>
+              <button key={"row-"+rowId+"tile-"+tileId} style={{height: tileSize, width: tileSize, ...tile.style}} onMouseOver={() => drawNode(rowId, tileId)} onClick={e => addStartEnd(rowId, tileId)}></button>
             )}
           </div>
         )}
