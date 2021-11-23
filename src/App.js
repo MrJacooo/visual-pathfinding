@@ -1,6 +1,13 @@
 import { useEffect, useState } from 'react';
 import './App.css';
 
+//TODO: ADD Algorithm
+//TODO: Drawing nodes
+//TODO: ADD Grid Size customisation
+//TODO: ADD onhover for drawing nodes
+
+
+
 //Setup for the Animation Loop
 // loop is a function that is executed every upadteInterval. Modified via changeLoopInterval
 var loop; var updateInterval = setInterval(() =>  loop(), 1000)
@@ -26,24 +33,24 @@ function App() {
   //Used to adjust the Animation Loop.
   //Takes e -> e.target.value and sets that as the new Interval for the Loop
   function changeLoopInterval(e){
-    setLoopInterval(e.target.value) //loopinterval is only a use
+    setLoopInterval(e.target.value) 
     clearInterval(updateInterval) 
     updateInterval = setInterval(() => loop(), e.target.value) 
   }
 
-  //generates the Base-Grid
+  //generates the Grid
   function generateGrid(){
     let tempGrid = [];
-    for(let i = 0; i < 20; i++){
+    for(let i = 0; i < gridY; i++){
       tempGrid = [...tempGrid , []] //generate file
-      for(let j = 0; j < 20; j++){
+      for(let j = 0; j < gridX; j++){
         tempGrid[i] = [...tempGrid[i], {x: j, y:i}] //generate ROW, x=ROW y=FILE
       }
     }
     setGrid(tempGrid)
   }
 
-  //styles Grid according to Window and Tile Amount
+  //styles Grid according to Windowsize and Tile Amount
   function gridStyle(){
     let xmargin = (window.innerWidth - (window.innerWidth*0.2)) / gridX
     let ymargin = (window.innerHeight - (window.innerHeight*0.2)) / gridY
