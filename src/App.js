@@ -25,12 +25,14 @@ let openlist = []
 let closedlist = []
 let q = {}
 
+let sortedList = []
+let parent = {}
 
 function App() {
   //Loop Administration
   const [counter, setCounter] = useState(0)
   const [toggleLoop, setToggleLoop] = useState(true)//used to prevent the loop from continuing
-  const [loopInterval, setLoopInterval] = useState(1000)
+  const [loopInterval, setLoopInterval] = useState(50)
 
   //Grid Administration
   const [grid, setGrid] = useState([])
@@ -48,6 +50,22 @@ function App() {
     if (!draw) {
       //TODO: periodical Sorting
 
+      //search
+      if(sortedList[0]){
+        tempGrid[sortedList[0].x][sortedList[0].y] = sortedList[0]
+        tempGrid[sortedList[0].x][sortedList[0].y].style = {backgroundColor : "lightblue"}
+        sortedList.shift()
+
+      //Find path
+      }else{
+        tempGrid[parent.x][parent.y].style = {backgroundColor: "magenta"}
+        parent = tempGrid[parent.parent.x][parent.parent.y]
+        if(parent.x == startTile.x && parent.y == startTile.y){
+          tempGrid[startTile.x][startTile.y].style = {backgroundColor: "green"}
+          tempGrid[endTile.x][endTile.y].style = {backgroundColor: "blue"}
+          setDraw(true)
+        }
+      }
     }
   }
 
@@ -66,20 +84,17 @@ function App() {
     console.log("starting sort")
     //Check if Start and End are defined
     if (endTile) {
-      //preventing from drawing
-      setDraw(false)
       //getting the h for every tile
       for (let i = 0; i < gridY; i++) {
         for (let j = 0; j < gridX; j++) {
           tempGrid[i][j] = { ...tempGrid[i][j], h: getDistanceBetweenTiles(tempGrid[i][j], tempGrid[endTile.x][endTile.y]) } //generate ROW, y=ROW x=FILE
         }
       }
-      //Adding start to Openlist
-      tempGrid[startTile.x][startTile.y] = { ...tempGrid[startTile.x][startTile.y], f: 0, g: 0 }
-      openlist = [tempGrid[startTile.x][startTile.y]]
-      //Securing that Grid and tempGrid are in sync
-      setGrid(tempGrid)
-      astar(tempGrid, startTile, endTile, 40, 40)
+      
+      sortedList = astar(tempGrid, startTile, endTile, gridX, gridY)
+      parent = sortedList[sortedList.length -2]
+      //preventing from drawing
+      setDraw(false)
     } else {
       alert("Define Start and End by pressing the mouse Button (Green: Start, Blue: End)")
     }
@@ -96,7 +111,7 @@ function App() {
     console.log(val)
     let tempInterval = 1
     switch (val) {
-      case "1": tempInterval = 50; break;
+      case "1": tempInterval = 20; break;
       case "2": tempInterval = 100; break;
       case "3": tempInterval = 500; break;
       default: tempInterval = 50; break;
@@ -151,7 +166,7 @@ function App() {
   useEffect(() => {
     generateGrid()
     gridStyle()
-    updateInterval = setInterval(() => loop(), 300)
+    updateInterval = setInterval(() => loop(), 100)
   }, [])
 
 
