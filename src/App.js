@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import './App.css';
 import astar from './astar';
+import astarV2 from './astarV2';
 
 //TODO: ADD Algorithm
 //TODO: Drawing Tiles
@@ -32,7 +33,7 @@ function App() {
   //Loop Administration
   const [counter, setCounter] = useState(0)
   const [toggleLoop, setToggleLoop] = useState(true)//used to prevent the loop from continuing
-  const [loopInterval, setLoopInterval] = useState(50)
+  const [loopInterval, setLoopInterval] = useState(10)
 
   //Grid Administration
   const [grid, setGrid] = useState([])
@@ -101,8 +102,9 @@ function App() {
   }
 
 
-  function endSort() {
+  function reset() {
     setDraw(true)
+    generateGrid()
   }
 
   //Used to adjust the Animation Loop.
@@ -111,12 +113,12 @@ function App() {
     console.log(val)
     let tempInterval = 1
     switch (val) {
-      case "1": tempInterval = 20; break;
+      case "1": tempInterval = 500; break;
       case "2": tempInterval = 100; break;
-      case "3": tempInterval = 500; break;
+      case "3": tempInterval = 20; break;
       default: tempInterval = 50; break;
     }
-    if (draw) { tempInterval = 50 } //to set the Interval while drawing
+    if (draw) { tempInterval = 20 } //to set the Interval while drawing
     setLoopInterval(val)
     clearInterval(updateInterval)
     updateInterval = setInterval(() => loop(), tempInterval)
@@ -153,7 +155,7 @@ function App() {
       if (drawType === "wall") { //Wand
         tempGrid[rowId][tileId] = { ...tempGrid[rowId][tileId], weight: 1000000, style: { backgroundColor: "#404040" } }
       } else if (drawType === "weight") { //Gewicht
-        tempGrid[rowId][tileId] = { ...tempGrid[rowId][tileId], weight: 2, style: { backgroundColor: "#e7a7a7" } }
+        tempGrid[rowId][tileId] = { ...tempGrid[rowId][tileId], weight: 1, style: { backgroundColor: "#e7a7a7" } }
       } else if (drawType === "none") { //leer
         tempGrid[rowId][tileId] = { ...tempGrid[rowId][tileId], weight: 0, style: { backgroundColor: "#e7e7e7" } }
       }
@@ -166,20 +168,26 @@ function App() {
   useEffect(() => {
     generateGrid()
     gridStyle()
-    updateInterval = setInterval(() => loop(), 100)
+    updateInterval = setInterval(() => loop(), 10)
   }, [])
 
 
 
   return (
     <div className="app">
+        <div style={{position:"absolute", top:0, left:0, fontSize:"0.5rem"}}>
+          {counter}
+        </div>
       <div className="header">
-        {counter}
-        <button onClick={() => { setToggleLoop(!toggleLoop) }}>Toggle Count Up</button>
-        <input type="range" step="1" max="3" min="1" value={loopInterval} onChange={e => changeLoopInterval(e.target.value)}></input>
-        <button onClick={startSort}>Start</button>
-        <button onClick={endSort}>stop</button>
-        <button onClick={() => astar(tempGrid, startTile, endTile, 40, 40)}>ASTAR</button>
+        <div>
+          <p>Sort Speed</p>
+          <input type="range" step="1" max="3" min="1" value={loopInterval} onChange={e => changeLoopInterval(e.target.value)}></input>
+        </div>
+        <div>
+          <p>Sort Controls</p>
+          <button className="blue" onClick={startSort}>Start</button>
+          <button className="red" onClick={reset}>reset</button>
+        </div>
       </div>
       <div className="grid">
         {grid.map((row, rowId) =>
