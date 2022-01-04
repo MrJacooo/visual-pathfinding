@@ -43,7 +43,7 @@ function App() {
   const [tileSize, setTilesize] = useState(0)
   const [draw, setDraw] = useState(true)
 
-  const [consoleInputs, setConsoleInputs] = useState([<li>Hover on Board and Press Key to draw:<br/>W: Wall<br/>G: Weight<br/>Space: Erase<br/>Press Key Again to stop Drawing</li>, <li>Type Commands to control the Sorting:<br/>start: Starts the Sort<br/>reset: reset the field</li>])
+  const [consoleInputs, setConsoleInputs] = useState([<div>Hover on Board and Press Key to draw:<br/>W: Wall<br/>G: Weight<br/>Space: Erase<br/>Press Key Again to stop Drawing</div>, <div>Type Commands to control the Sorting:<br/>start: Starts the Sort<br/>reset: reset the field<br/>resize (10-40): set new size of grid<br/>speed (1-3): adjust loop speed<br/><sm style={{color: "red"}}>If value is not in Range, there may occur errors</sm></div>])
   const [command, setCommand] = useState("")
 
   //This is the Loop thats used to animate the Algorithm. Created via updateInterval
@@ -137,16 +137,18 @@ function App() {
       }
     }
     //start and End Tile
-    tempGrid[5][5] = { ...tempGrid[5][5], style: { backgroundColor: "#109f10" }, status: "start" }
-    startTile = { ...tempGrid[5][5], style: { backgroundColor: "#109f10" }, status: "start" }
-    tempGrid[34][34] = { ...tempGrid[34][34], style: { backgroundColor: "#10109f" }, status: "end" }
-    endTile = { ...tempGrid[34][34], style: { backgroundColor: "#10109f" }, status: "end" }
+    let sc = Math.abs(gridX/5)
+    let ec = Math.abs(gridX/5*4)
+    tempGrid[sc][sc] = { ...tempGrid[sc][sc], style: { backgroundColor: "#109f10" }, status: "start" }
+    startTile = { ...tempGrid[sc][sc], style: { backgroundColor: "#109f10" }, status: "start" }
+    tempGrid[ec][ec] = { ...tempGrid[ec][ec], style: { backgroundColor: "#10109f" }, status: "end" }
+    endTile = { ...tempGrid[ec][ec], style: { backgroundColor: "#10109f" }, status: "end" }
     setGrid(tempGrid)
   }
 
   //styles Grid according to Windowsize and Tile Amount
   function gridStyle() {
-    let xmargin = (window.innerWidth - (window.innerWidth * 0.2)) / gridX
+    let xmargin = (window.innerWidth - (window.innerWidth * 0.5)) / gridX
     let ymargin = (window.innerHeight - (window.innerHeight * 0.2)) / gridY
     setTilesize(xmargin < ymargin ? xmargin : ymargin) //chooses the smaller size so the Grid fits perfectly
   }
@@ -165,9 +167,36 @@ function App() {
   }
 
   function commandInput(e) {
-    if(e.keyCode === 13){
-      console.log("enter?")
+    if(e.keyCode === 13 && command !== ""){
+      let input = command.split(" ")
+      switch (input[0].toLowerCase()) {
+        case "start":
+          startSort()
+          input = "Starting the Sorting Process."
+          drawType = 0
+        break;
+        case "reset":
+            reset()
+            gridStyle()
+            drawType = 0
+          input = "Resetting the Grid."
+        break;
+        case "resize":
+          setGridX(input[1] || 20)
+          setGridY(input[1] || 20)
+          input = "Adjusted Grid size, reset the Grid for this to take effect."
+        break;
+        case "speed":
+          changeLoopInterval(input[1] || 3)
+          input = "Changing the loop speed."
+          break;
+        default:
+          input = "There was an error, \"" + input + "\" is unknown"
+      }
+      setConsoleInputs([...consoleInputs, input])
       setCommand("")
+    }else{
+      setCommand(e.target.value)
     }
   }
 
@@ -204,7 +233,7 @@ function App() {
         </div>
         <div className='console-input' >
           <div className='label'>Console Input</div>
-          <div className="input" contenteditable="true" onKeyDown={commandInput} value={command} onChange={e => setCommand(e.target.value)}></div>
+          <input type="text"  className="input" onKeyDown={commandInput} value={command} onChange={commandInput} />
         </div>
       </div>
     </div>
@@ -230,17 +259,3 @@ window.addEventListener("keydown", e => {
 })
 
 export default App;
-
-/** Old Header
- * <div className="header">
-        <div>
-          <p>Sort Speed</p>
-          <input type="range" step="1" max="3" min="1" value={loopInterval} onChange={e => changeLoopInterval(e.target.value)}></input>
-        </div>
-        <div>
-          <p>Sort Controls</p>
-          <button className="blue" onClick={startSort}>Start</button>
-          <button className="red" onClick={reset}>reset</button>
-        </div>
-      </div>
- */
