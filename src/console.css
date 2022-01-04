@@ -1,0 +1,53 @@
+.console {
+  position: absolute;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 30vw;
+  min-width: 300px;
+  color: rgb(200, 199, 209);
+}
+
+.console-text {
+  height: 100%;
+  width: 100%;
+  background-color: rgb(27, 27, 31);
+  text-align: left;
+}
+
+ul {
+  list-style-type: "> ";
+}
+
+li {
+  margin-bottom: 10px;
+}
+
+.console-input {
+  border-top: 1px rgb(136, 136, 136) solid;
+  display: flex;
+  flex-direction: column;
+  height: 3rem;
+  width: 100%;
+  background-color: rgb(22, 22, 22);
+  margin: 0;
+  text-align: left;
+}
+
+.console-input .label {
+  margin-left: 5px;
+  font-size: 0.5rem;
+}
+
+.console-input .input {
+  margin-top: 5px;
+  margin-left: 5px;
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.console-input .input:focus {
+  outline: none;
+}

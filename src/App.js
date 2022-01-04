@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import astar from './astar';
 import astarV2 from './astarV2';
+import "./console.css";
 
 //TODO: ADD Algorithm
 //TODO: Drawing Tiles
@@ -42,6 +43,8 @@ function App() {
   const [tileSize, setTilesize] = useState(0)
   const [draw, setDraw] = useState(true)
 
+  const [consoleInputs, setConsoleInputs] = useState([<li>Hover on Board and Press Key to draw:<br/>W: Wall<br/>G: Weight<br/>Space: Erase<br/>Press Key Again to stop Drawing</li>, <li>Type Commands to control the Sorting:<br/>start: Starts the Sort<br/>reset: reset the field</li>])
+  const [command, setCommand] = useState("")
 
   //This is the Loop thats used to animate the Algorithm. Created via updateInterval
   loop = () => {
@@ -91,7 +94,6 @@ function App() {
           tempGrid[i][j] = { ...tempGrid[i][j], h: getDistanceBetweenTiles(tempGrid[i][j], tempGrid[endTile.x][endTile.y]) } //generate ROW, y=ROW x=FILE
         }
       }
-      
       sortedList = astar(tempGrid, startTile, endTile, gridX, gridY)
       parent = sortedList[sortedList.length -2]
       //preventing from drawing
@@ -162,6 +164,13 @@ function App() {
     }
   }
 
+  function commandInput(e) {
+    if(e.keyCode === 13){
+      console.log("enter?")
+      setCommand("")
+    }
+  }
+
 
 
   //Setup, only executes at Start
@@ -175,19 +184,8 @@ function App() {
 
   return (
     <div className="app">
-        <div style={{position:"absolute", top:0, left:0, fontSize:"0.5rem"}}>
-          {counter}
-        </div>
-      <div className="header">
-        <div>
-          <p>Sort Speed</p>
-          <input type="range" step="1" max="3" min="1" value={loopInterval} onChange={e => changeLoopInterval(e.target.value)}></input>
-        </div>
-        <div>
-          <p>Sort Controls</p>
-          <button className="blue" onClick={startSort}>Start</button>
-          <button className="red" onClick={reset}>reset</button>
-        </div>
+      <div style={{position:"absolute", top:0, left:0, fontSize:"0.5rem"}}>
+        {counter}
       </div>
       <div className="grid">
         {grid.map((row, rowId) =>
@@ -197,6 +195,17 @@ function App() {
             )}
           </div>
         )}
+      </div>
+      <div className='console'>
+        <div className='console-text'>
+            <ul>
+              {consoleInputs.map((text,id) => <li key={id}>{text}</li>)}
+            </ul>
+        </div>
+        <div className='console-input' >
+          <div className='label'>Console Input</div>
+          <div className="input" contenteditable="true" onKeyDown={commandInput} value={command} onChange={e => setCommand(e.target.value)}></div>
+        </div>
       </div>
     </div>
   );
@@ -221,3 +230,17 @@ window.addEventListener("keydown", e => {
 })
 
 export default App;
+
+/** Old Header
+ * <div className="header">
+        <div>
+          <p>Sort Speed</p>
+          <input type="range" step="1" max="3" min="1" value={loopInterval} onChange={e => changeLoopInterval(e.target.value)}></input>
+        </div>
+        <div>
+          <p>Sort Controls</p>
+          <button className="blue" onClick={startSort}>Start</button>
+          <button className="red" onClick={reset}>reset</button>
+        </div>
+      </div>
+ */
